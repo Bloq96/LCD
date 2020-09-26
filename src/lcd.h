@@ -80,14 +80,16 @@ typedef struct {
 
 
 /************************************** Public functions **************************************/
-//void Lcd_init(Lcd_HandleTypeDef * lcd);
+void lcd_pos_cursor(DisplayLCD* lcd,uint8_t coordinates[2]);
+void lcd_blink_cursor(DisplayLCD* lcd);
+void lcd_clear_display(DisplayLCD* lcd);
+void lcd_init(DisplayLCD* lcd);
 //void Lcd_int(Lcd_HandleTypeDef * lcd, int number);
 //void Lcd_string(Lcd_HandleTypeDef * lcd, char * string);
 //void Lcd_cursor(Lcd_HandleTypeDef * lcd, uint8_t row, uint8_t col);
-//Lcd_HandleTypeDef Lcd_create(
-//		Lcd_PortType port[], Lcd_PinType pin[],
-//		Lcd_PortType rs_port, Lcd_PinType rs_pin,
-//		Lcd_PortType en_port, Lcd_PinType en_pin, Lcd_ModeTypeDef mode);
+DisplayLCD lcd_generate(GPIO_Port data_port[], GPIO_Pin
+data_pin[], GPIO_Port rs_port, GPIO_Pin rs_pin, GPIO_Port
+en_port, GPIO_Pin en_pin);
 //void Lcd_define_char(Lcd_HandleTypeDef * lcd, uint8_t code, uint8_t bitmap[]);
 //void Lcd_clear(Lcd_HandleTypeDef * lcd);
 

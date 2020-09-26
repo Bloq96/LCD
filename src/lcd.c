@@ -7,17 +7,15 @@
 
 #include "lcd.h"
 //const uint8_t ROW_16[] = {0x00, 0x40, 0x10, 0x50};
-//const uint8_t ROW_20[] = {0x00, 0x40, 0x14, 0x54};
-///************************************** Static declarations **************************************/
-//
-//static void lcd_write_data(Lcd_HandleTypeDef * lcd, uint8_t data);
-//static void lcd_write_command(Lcd_HandleTypeDef * lcd, uint8_t command);
-//static void lcd_write(Lcd_HandleTypeDef * lcd, uint8_t data, uint8_t len);
-//
-//
+/************************************** Static declarations **************************************/
+
+const uint8_t lcd_row_addresses[] = {0x00,0x40,0x14,0x54};
+static void lcd_load(DisplayLCD* lcd, uint8_t data, uint8_t time, uint8_t mode);
+
+
 ///************************************** Function definitions **************************************/
 
-DisplayLCD generate_lcd(GPIO_Port port[],GPIO_Pin pin[],
+DisplayLCD lcd_generate(GPIO_Port port[],GPIO_Pin pin[],
 GPIO_Port rs_port,GPIO_Pin rs_pin,GPIO_Port en_port,
 GPIO_Pin en_pin) {
 	DisplayLCD lcd;
@@ -34,17 +32,48 @@ GPIO_Pin en_pin) {
 	return lcd;
 }
 
-void lcd_init(DisplayLCD* lcd)
-{
+void lcd_init(DisplayLCD* lcd) {
+    HAL_Delay(15);
+	lcd_load(lcd,0x33,5,0);
+	lcd_load(lcd,0x32,5,0);
 
-	lcd_write_command(lcd, 0x33);
-	lcd_write_command(lcd, 0x32);
-	lcd_write_command(lcd, FUNCTION_SET | OPT_N);
+	lcd_load(lcd,0x28,1,0);
 
-	lcd_write_command(lcd, CLEAR_DISPLAY);						// Clear screen
-	lcd_write_command(lcd, DISPLAY_ON_OFF_CONTROL | OPT_D);		// Lcd-on, cursor-off, no-blink
-	lcd_write_command(lcd, ENTRY_MODE_SET | OPT_INC);			// Increment cursor
+	lcd_load(lcd,0x08,1,0);
+	lcd_load(lcd,0x01,2,0);
+
+	//lcd_load(lcd,0x0F,1,0);
 }
+
+void lcd_clear_display(DisplayLCD* lcd) {
+	lcd_load(lcd,0x01,2,0);
+}
+
+void lcd_blink_cursor(DisplayLCD* lcd) {
+	lcd_load(lcd,0x0F,1,0);
+}
+
+void lcd_pos_cursor(DisplayLCD* lcd,uint8_t coordinates[2]) {
+    lcd_load(lcd,0x80|(lcd_row_addresses[coordinates[1]]+
+    coordinates[0]),1,0);
+}
+
+//char* string = "....................\
+//		        ....";
+
+//void lcd_write_data(DisplayLCD* lcd,char* string) {
+//	uint8_t it;
+//	it = 0;
+//	while(it<20&&it<strlen(string)) {
+//		lcd_load(lcd,uint8_t(string[it]),1,1);
+//		++it;
+//	}
+//	it = 0;
+//	while(it<20&&it<strlen(string)) {
+//	    lcd_load(lcd,uint8_t(string[it]),1,1);
+//	    ++it;
+//	}
+//}
 //
 ///**
 // * Write a number on the current position
@@ -141,8 +170,10 @@ void lcd_init(DisplayLCD* lcd)
 ///**
 // * Set len bits on the bus and toggle the enable line
 // */
-void lcd_load(DisplayLCD* lcd, uint8_t data, uint8_t time)
+void lcd_load(DisplayLCD* lcd,uint8_t data,uint8_t time,
+		      uint8_t mode)
 {
+	HAL_GPIO_WritePin(lcd->rs_port,lcd->rs_pin,mode);
 	for(uint8_t it=0;it<4;++it) {
 		HAL_GPIO_WritePin(lcd->data_port[it],
 		lcd->data_pin[it],(data>>(it+4))&0x01);
@@ -150,7 +181,7 @@ void lcd_load(DisplayLCD* lcd, uint8_t data, uint8_t time)
 	HAL_GPIO_WritePin(lcd->en_port,lcd->en_pin,1);
 	HAL_Delay(time);
 	HAL_GPIO_WritePin(lcd->en_port,lcd->en_pin,0);
-	HAL_Delaay(time);
+	HAL_Delay(time);
 	for(uint8_t it=0;it<4;++it) {
 		HAL_GPIO_WritePin(lcd->data_port[it],
 		lcd->data_pin[it],(data>>it)&0x01);
