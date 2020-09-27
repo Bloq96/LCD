@@ -59,6 +59,8 @@
 //
 //
 ///************************************** LCD typedefs **************************************/
+typedef char Matrix[4][20];
+typedef uint8_t Cartesian[2];
 typedef GPIO_TypeDef* GPIO_Port;
 typedef uint16_t GPIO_Pin;
 
@@ -77,6 +79,9 @@ typedef struct {
 
 	GPIO_Port en_port;
 	GPIO_Pin en_pin;
+
+    Cartesian cursor_pos;
+    Matrix display;
 } DisplayLCD;
 
 
@@ -84,10 +89,13 @@ typedef struct {
 void lcd_pos_cursor(DisplayLCD* lcd,uint8_t coordinates[2]);
 void lcd_blink_cursor(DisplayLCD* lcd);
 void lcd_clear_display(DisplayLCD* lcd);
-void lcd_write_data(DisplayLCD* lcd,char* string,uint8_t
-		            start_pos[2]);
+void lcd_write_data(DisplayLCD* lcd,char* string);
 void lcd_shift_cursor(DisplayLCD* lcd,uint8_t direction);
 void lcd_shift_display(DisplayLCD* lcd,uint8_t direction);
+void lcd_fast_shift(DisplayLCD* lcd,uint8_t direction,uint8_t
+		            times, uint16_t delay);
+void lcd_display_matrix(DisplayLCD* lcd);
+void lcd_return_home(DisplayLCD* lcd);
 //char* lcd_convert_number(uint8_t number);
 void lcd_init(DisplayLCD* lcd);
 //void Lcd_int(Lcd_HandleTypeDef * lcd, int number);

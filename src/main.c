@@ -101,13 +101,37 @@ int main(void)
 
   lcd_blink_cursor(&lcd);
 
-  char* str = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-
   //lcd_convert_number(134.7,&str);//"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789101112131415161718";
-
-  uint8_t pos[2] = {5,3};
-
-  lcd_write_data(&lcd,str,pos);
+//  lcd_shift_cursor(&lcd,0);
+//  HAL_Delay(5000);
+//  lcd_return_home(&lcd);
+  char* str = "ABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGH";
+  lcd_write_data(&lcd,str);
+  for(uint8_t it=0;it<25;++it) {
+      lcd_shift_display(&lcd,0);
+  }
+  Cartesian pos =  {10,2};
+  lcd_pos_cursor(&lcd,pos);
+  HAL_Delay(5000);
+  lcd_write_data(&lcd,str);
+  HAL_Delay(5000);
+  lcd_fast_shift(&lcd,1,25,500);
+  HAL_Delay(5000);
+  lcd_shift_cursor(&lcd,1);
+  HAL_Delay(5000);
+  lcd_display_matrix(&lcd);
+//  HAL_Delay(1000);
+//  lcd_pos_cursor(&lcd,pos);
+  //lcd_return_home(&lcd);
+  //HAL_Delay(1000);
+  //lcd_display_matrix(&lcd);
+  //lcd_write_data(&lcd,str);
+//  HAL_Delay(5000);
+  //lcd_display_matrix(&lcd);
+//  for(uint8_t it2=0;it2<27;++it2) {
+//	  lcd_shift_display(&lcd,1);
+//  }
+//  lcd_display_matrix(&lcd);
 
   /* USER CODE END 2 */
 
@@ -116,6 +140,8 @@ int main(void)
   while (1)
   {
     /* USER CODE END WHILE */
+	//lcd_shift_display(&lcd,1);
+	//HAL_Delay(1000);
 
     /* USER CODE BEGIN 3 */
   }
