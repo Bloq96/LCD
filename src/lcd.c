@@ -53,27 +53,53 @@ void lcd_blink_cursor(DisplayLCD* lcd) {
 	lcd_load(lcd,0x0F,1,0);
 }
 
+void lcd_shift_cursor(DisplayLCD* lcd,uint8_t direction) {
+	lcd_load(lcd,0x10|(direction << 2),1,0);
+}
+
+
+void lcd_shift_display(DisplayLCD* lcd,uint8_t direction) {
+	lcd_load(lcd,0x18|(direction << 2),1,0);
+};
+
+//char* lcd_convert_number(uint8_t number) {
+//	uint8_t it = 0;
+//    while(it<20&&number>0) {
+//    	chars[it]=number%10;
+//    	number/=10;
+//    	++it;
+//    }
+//    return chars;
+//};
+
 void lcd_pos_cursor(DisplayLCD* lcd,uint8_t coordinates[2]) {
     lcd_load(lcd,0x80|(lcd_row_addresses[coordinates[1]]+
     coordinates[0]),1,0);
 }
 
-//char* string = "....................\
-//		        ....";
-
-//void lcd_write_data(DisplayLCD* lcd,char* string) {
-//	uint8_t it;
-//	it = 0;
-//	while(it<20&&it<strlen(string)) {
-//		lcd_load(lcd,uint8_t(string[it]),1,1);
-//		++it;
-//	}
-//	it = 0;
-//	while(it<20&&it<strlen(string)) {
-//	    lcd_load(lcd,uint8_t(string[it]),1,1);
-//	    ++it;
-//	}
-//}
+void lcd_write_data(DisplayLCD* lcd,char* string,uint8_t
+start_pos[2]) {
+	lcd_pos_cursor(lcd,start_pos);
+	uint8_t pos[2];
+	pos[0] = 0;
+	pos[1] = start_pos[1];
+	uint8_t it = start_pos[0];
+	while(pos[1]<4) {
+	    while(it<(20*(pos[1]-start_pos[1]+1))&&it<(
+	    strlen(string)+start_pos[0])) {
+		    lcd_load(lcd,string[it-start_pos[0]],1,1);
+		    ++it;
+	    }
+	    ++pos[1];
+	    if(pos[1]<4) {
+		    lcd_pos_cursor(lcd,pos);
+	    } else {
+	    	uint8_t final_pos[2] = {it%20,(it/20+
+	    	start_pos[1])%4};
+	    	lcd_pos_cursor(lcd,final_pos);
+	    }
+	}
+}
 //
 ///**
 // * Write a number on the current position

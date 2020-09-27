@@ -101,9 +101,13 @@ int main(void)
 
   lcd_blink_cursor(&lcd);
 
-  uint8_t pos[2] = {5,1};
+  char* str = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
-  lcd_pos_cursor(&lcd,pos);
+  //lcd_convert_number(134.7,&str);//"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789101112131415161718";
+
+  uint8_t pos[2] = {5,3};
+
+  lcd_write_data(&lcd,str,pos);
 
   /* USER CODE END 2 */
 
